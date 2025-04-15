@@ -1,27 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Rock Paper Scissors</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Rock Paper Scissors - Home</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1f1c2c, #928dab);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 30px;
+            font-size: 2em;
+            color: #f1c40f;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+        }
+        
+        .btn {
+            margin-top: 15px;
+            font-size: 1.2em;
+            background-color: #2c3e50;
+            color: white;
+            border: transparent;
+            padding: 15px 25px;
+            border-radius: 12px;
+            max-width: 90%;
+            text-align: center;
+            width: 350px;
+            min-height: 65px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease;
+        }
+        .btn:hover {
+            background-color: gray;
+        }
+        
+        #fantasy-loading {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            margin-top: 30px;
+            animation: fadeIn 1s ease-in-out;
+            gap: 10px;
+        }
+
+        .circle {
+            width: 20px;
+            height: 20px;
+            background-color: #f1c40f;
+            border-radius: 50%;
+            animation: bounce 1.5s infinite ease-in-out;
+        }
+
+        .circle:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+
+        .circle:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        @keyframes bounce {
+            0%, 80%, 100% {
+                transform: scale(0);
+            }
+            40% {
+                transform: scale(1);
+            }
+        }
+
+        .version {
+            position: fixed;
+            bottom: 10px;
+            font-size: .9rem;
+            color: #ccc;
+            text-align: center;
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
-  <h1>Rock Paper Scissors</h1>
+    
+    <h1>Rock Paper Scissors</h1>
+    <button class="btn" onclick="startNewGame()">New Game</button>
+    <button class="btn" onclick="continueGame()">Continue Game</button>
+    
+    <div id="fantasy-loading" style="display:none;">
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+    </div>
 
-  <div class="choices">
-    <button class="choice-btn" onclick="playGame('rock')">✊</button>
-    <button class="choice-btn" onclick="playGame('paper')">✋</button>
-    <button class="choice-btn" onclick="playGame('scissors')">✌️</button>
-  </div>
+    <footer class="version">v1.0.1</footer>
 
-  <div class="info" id="playerChoice">You chose: </div>
-  <div class="info" id="computerChoice">Computer chose: </div>
-  <div class="result" id="result">Result: </div>
-  <div class="score" id="score">Player: 0 | Computer: 0</div>
-  
-  <footer class="version">v1.0.1</footer>
+    <script>
+    function startNewGame() {
+        localStorage.setItem("rps_playerScore", "0");
+        localStorage.setItem("rps_computerScore", "0");
+        window.location.href = "game.html";
+    }
+    
+    function continueGame() {
+        document.getElementById('fantasy-loading').style.display = 'flex';
 
-  <script src="script.js"></script>
+        const player = localStorage.getItem("rps_playerScore");
+        const computer = localStorage.getItem("rps_computerScore");
+
+        setTimeout(() => {
+            if (player === null || computer === null) {
+                localStorage.setItem("rps_playerScore", "0");
+                localStorage.setItem("rps_computerScore", "0");
+            }
+            window.location.href = "game.html";
+        }, 2000);
+    }
+</script>
+    
 </body>
 </html>
