@@ -38,10 +38,10 @@ let playerScore = parseInt(localStorage.getItem("rps_playerScore"), 10);
         (playerChoice === 'paper' && computerChoice === 'rock') ||
         (playerChoice === 'scissors' && computerChoice === 'paper')
       ) {
-        result = `You Win! ${emojiMap[playerChoice]} beats ${emojiMap[computerChoice]}`;
+        result = `<span style="color: #00ffae">You Win! ${emojiMap[playerChoice]} beats ${emojiMap[computerChoice]}</span>`;
         playerScore++;
       } else {
-        result = `You Lose! ${emojiMap[computerChoice]} beats ${emojiMap[playerChoice]}`;
+        result = `<span style="color: red">You Lose! ${emojiMap[computerChoice]} beats ${emojiMap[playerChoice]}</span>`;
         computerScore++;
       }
 

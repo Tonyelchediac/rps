@@ -68,11 +68,6 @@
     justify-content: center;
   }
   
-  .winner {
-    font-weight: bold;
-    font-size: 1.4em;
-    color: #00ffae;
-  }
   
   .version {
     position: fixed;
