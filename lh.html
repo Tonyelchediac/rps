@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game History</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Game History</h1>
+            <p class="subtitle">Past matches and results</p>
+        </header>
+
+        <div class="history-container">
+            <div class="history-actions">
+                <a href="game.html" class="back-btn">
+                    <i class="fas fa-arrow-left"></i> Back to Game
+                </a>
+                <button id="clear-history" class="history-btn">
+                    <i class="fas fa-trash"></i> Clear History
+                </button>
+            </div>
+
+            <div class="history-list" id="history-list">
+                <!-- History items will be loaded here -->
+            </div>
+
+            <div id="no-history" class="no-history">
+                <i class="fas fa-history"></i>
+                <p>No game history found</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const historyList = document.getElementById('history-list');
+            const noHistory = document.getElementById('no-history');
+            const clearBtn = document.getElementById('clear-history');
+
+            // Load history
+            function loadHistory() {
+                const history = JSON.parse(localStorage.getItem('rpsHistory')) || [];
+                
+                if (history.length === 0) {
+                    noHistory.style.display = 'flex';
+                    historyList.style.display = 'none';
+                    return;
+                }
+
+                noHistory.style.display = 'none';
+                historyList.style.display = 'block';
+                historyList.innerHTML = '';
+
+                history.forEach((game, index) => {
+                    const gameItem = document.createElement('div');
+                    gameItem.className = 'history-item';
+                    
+                    let resultClass = '';
+                    let resultIcon = '';
+                    
+                    switch(game.result) {
+                        case 'win':
+                            resultClass = 'win';
+                            resultIcon = '<i class="fas fa-trophy"></i>';
+                            break;
+                        case 'lose':
+                            resultClass = 'lose';
+                            resultIcon = '<i class="fas fa-times-circle"></i>';
+                            break;
+                        case 'draw':
+                            resultClass = 'draw';
+                            resultIcon = '<i class="fas fa-handshake"></i>';
+                            break;
+                    }
+
+                    const icons = {
+                        rock: '<i class="fas fa-hand-rock"></i>',
+                        paper: '<i class="fas fa-hand-paper"></i>',
+                        scissors: '<i class="fas fa-hand-scissors"></i>'
+                    };
+
+                    gameItem.innerHTML = `
+                        <div class="history-header">
+                            <span class="history-date">${game.timestamp}</span>
+                            <span class="history-result ${resultClass}">
+                                ${resultIcon} ${game.result.toUpperCase()}
+                            </span>
+                        </div>
+                        <div class="history-details">
+                            <div class="history-choice">
+                                <span>Player:</span>
+                                <span class="choice-icon">${icons[game.playerChoice]}</span>
+                                <span>${game.playerChoice}</span>
+                            </div>
+                            <div class="vs-icon">VS</div>
+                            <div class="history-choice">
+                                <span>Computer:</span>
+                                <span class="choice-icon">${icons[game.computerChoice]}</span>
+                                <span>${game.computerChoice}</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    historyList.appendChild(gameItem);
+                });
+            }
+
+            // Clear history
+            clearBtn.addEventListener('click', () => {
+                if (confirm('Are you sure you want to clear all history?')) {
+                    localStorage.removeItem('rpsHistory');
+                    loadHistory();
+                }
+            });
+
+            // Initial load
+            loadHistory();
+        });
+    </script>
+</body>
+</html>

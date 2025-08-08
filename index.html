@@ -1,131 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Rock Paper Scissors - Home</title>
-    <link rel="shortcut icon" href="images/game icon.png" type="image/x-icon">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #1f1c2c, #928dab);
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            text-align: center;
-        }
-        h1 {
-            margin-bottom: 30px;
-            font-size: 2em;
-            color: #f1c40f;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
-        }
-        
-        .btn {
-            margin-top: 15px;
-            font-size: 1.2em;
-            background-color: #2c3e50;
-            color: white;
-            border: transparent;
-            padding: 15px 25px;
-            border-radius: 12px;
-            max-width: 90%;
-            text-align: center;
-            width: 350px;
-            min-height: 65px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.3s ease;
-        }
-        .btn:hover {
-            background-color: gray;
-        }
-        
-        #fantasy-loading {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: center;
-            margin-top: 30px;
-            animation: fadeIn 1s ease-in-out;
-            gap: 10px;
-        }
-
-        .circle {
-            width: 20px;
-            height: 20px;
-            background-color: #f1c40f;
-            border-radius: 50%;
-            animation: bounce 1.5s infinite ease-in-out;
-        }
-
-        .circle:nth-child(2) {
-            animation-delay: 0.3s;
-        }
-
-        .circle:nth-child(3) {
-            animation-delay: 0.6s;
-        }
-
-        @keyframes bounce {
-            0%, 80%, 100% {
-                transform: scale(0);
-            }
-            40% {
-                transform: scale(1);
-            }
-        }
-
-        .version {
-            position: fixed;
-            bottom: 10px;
-            font-size: .9rem;
-            color: #ccc;
-            text-align: center;
-            width: 100%;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock Paper Scissors</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    
-    <h1>Rock Paper Scissors</h1>
-    <button class="btn" onclick="startNewGame()">New Game</button>
-    <button class="btn" onclick="continueGame()">Continue Game</button>
-    
-    <div id="fantasy-loading" style="display:none;">
-        <div class="circle"></div>
-        <div class="circle"></div>
-        <div class="circle"></div>
+    <div class="container">
+        <header>
+            <h1>Rock Paper Scissors</h1>
+            <p class="subtitle">The Ultimate Duel Game</p>
+        </header>
+
+        <div class="menu">
+            <a href="game.html" class="menu-btn">
+                <i class="fas fa-gamepad"></i>
+                <span>Play Game</span>
+            </a>
+            <a href="LH.html" class="menu-btn">
+                <i class="fas fa-history"></i>
+                <span>Game History</span>
+            </a>
+        </div>
     </div>
-
-    <footer class="version">v1.0.1</footer>
-
-    <script>
-    function startNewGame() {
-        localStorage.setItem("rps_playerScore", "0");
-        localStorage.setItem("rps_computerScore", "0");
-        window.location.href = "game.html";
-    }
-    
-    function continueGame() {
-        document.getElementById('fantasy-loading').style.display = 'flex';
-
-        const player = localStorage.getItem("rps_playerScore");
-        const computer = localStorage.getItem("rps_computerScore");
-
-        setTimeout(() => {
-            if (player === null || computer === null) {
-                localStorage.setItem("rps_playerScore", "0");
-                localStorage.setItem("rps_computerScore", "0");
-            }
-            window.location.href = "game.html";
-        }, 2000);
-    }
-</script>
-    
 </body>
 </html>

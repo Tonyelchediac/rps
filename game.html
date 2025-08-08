@@ -1,28 +1,268 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Rock Paper Scissors</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="shortcut icon" href="images/game icon.png" type="image/x-icon">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock Paper Scissors Game</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-  <h1>Rock Paper Scissors</h1>
+    <div class="container">
+        <header>
+            <h1>Rock Paper Scissors</h1>
+            <p class="subtitle">Choose your weapon!</p>
+        </header>
 
-  <div class="choices">
-    <button class="choice-btn" onclick="playGame('rock')">✊</button>
-    <button class="choice-btn" onclick="playGame('paper')">✋</button>
-    <button class="choice-btn" onclick="playGame('scissors')">✌</button>
-  </div>
+        <div class="game-area">
+            <div class="score-board">
+                <div class="score">
+                    <h2>Player</h2>
+                    <div class="score-value" id="player-score">0</div>
+                </div>
+                <div class="score">
+                    <h2>Computer</h2>
+                    <div class="score-value" id="computer-score">0</div>
+                </div>
+            </div>
 
-  <div class="info" id="playerChoice">You chose: </div>
-  <div class="info" id="computerChoice">Computer chose: </div>
-  <div class="result" id="result">Result: </div>
-  <div class="score" id="score">Player: 0 | Computer: 0</div>
-  
-  <footer class="version">v1.0.1</footer>
+            <div class="choices">
+                <div class="choice" data-choice="rock" title="Rock">
+                    <i class="fas fa-hand-rock"></i>
+                </div>
+                <div class="choice" data-choice="paper" title="Paper">
+                    <i class="fas fa-hand-paper"></i>
+                </div>
+                <div class="choice" data-choice="scissors" title="Scissors">
+                    <i class="fas fa-hand-scissors"></i>
+                </div>
+            </div>
 
-  <script src="script.js"></script>
+            <div class="duel-area" id="duel-area">
+                <div class="hand player-hand" id="player-hand">
+                    <i class="fas fa-question"></i>
+                </div>
+                <div class="vs-text" id="vs-text">VS</div>
+                <div class="hand computer-hand" id="computer-hand">
+                    <i class="fas fa-question"></i>
+                </div>
+            </div>
+
+            <div class="result-area">
+                <div class="result-text" id="result-text">Make your move!</div>
+                <button class="reset-btn" id="reset-btn">Play Again</button>
+                <a href="LH.html" class="history-btn">
+                    <i class="fas fa-history"></i> View History
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game State Management
+        class GameState {
+            constructor() {
+                this.playerScore = 0;
+                this.computerScore = 0;
+                this.loadHistory();
+            }
+
+            saveRound(playerChoice, computerChoice, result) {
+                const history = this.getHistory();
+                history.unshift({
+                    playerChoice,
+                    computerChoice,
+                    result,
+                    timestamp: new Date().toLocaleString()
+                });
+                localStorage.setItem('rpsHistory', JSON.stringify(history));
+            }
+
+            getHistory() {
+                return JSON.parse(localStorage.getItem('rpsHistory')) || [];
+            }
+
+            loadHistory() {
+                const history = this.getHistory();
+                if (history.length > 0) {
+                    const lastGame = history[0];
+                    this.playerScore = lastGame.playerScore || 0;
+                    this.computerScore = lastGame.computerScore || 0;
+                }
+            }
+
+            clearHistory() {
+                localStorage.removeItem('rpsHistory');
+            }
+
+            resetGame() {
+                this.playerScore = 0;
+                this.computerScore = 0;
+            }
+        }
+
+        // DOM Elements
+        const elements = {
+            playerScore: document.getElementById('player-score'),
+            computerScore: document.getElementById('computer-score'),
+            choices: document.querySelectorAll('.choice'),
+            resultText: document.getElementById('result-text'),
+            resetBtn: document.getElementById('reset-btn'),
+            playerHand: document.getElementById('player-hand'),
+            computerHand: document.getElementById('computer-hand'),
+            vsText: document.getElementById('vs-text')
+        };
+
+        // Initialize game state
+        const gameState = new GameState();
+        updateScores();
+
+        // Event Listeners
+        elements.choices.forEach(choice => {
+            choice.addEventListener('click', () => {
+                const playerChoice = choice.dataset.choice;
+                playRound(playerChoice);
+            });
+        });
+
+        elements.resetBtn.addEventListener('click', resetGame);
+
+        // Game Functions
+        function playRound(playerChoice) {
+            // Set player's hand
+            setHandIcon(elements.playerHand, playerChoice);
+            
+            // Show loading state
+            elements.resultText.textContent = 'Computer is choosing...';
+            elements.computerHand.innerHTML = '<i class="fas fa-cog fa-spin"></i>';
+            
+            // Reset duel area
+            elements.playerHand.style.transform = 'translateX(-50px) rotate(-30deg)';
+            elements.computerHand.style.transform = 'translateX(50px) rotate(30deg)';
+            elements.vsText.style.opacity = '0';
+            
+            // Computer choice with delay
+            setTimeout(() => {
+                const computerChoice = getComputerChoice();
+                const result = determineWinner(playerChoice, computerChoice);
+                
+                // Set computer's hand
+                setHandIcon(elements.computerHand, computerChoice);
+                
+                // Animate duel
+                animateDuel(playerChoice, computerChoice, result);
+            }, 1000);
+        }
+
+        function getComputerChoice() {
+            const choices = ['rock', 'paper', 'scissors'];
+            const randomIndex = Math.floor(Math.random() * 3);
+            return choices[randomIndex];
+        }
+
+        function determineWinner(playerChoice, computerChoice) {
+            if (playerChoice === computerChoice) return 'draw';
+            
+            if (
+                (playerChoice === 'rock' && computerChoice === 'scissors') ||
+                (playerChoice === 'paper' && computerChoice === 'rock') ||
+                (playerChoice === 'scissors' && computerChoice === 'paper')
+            ) {
+                return 'win';
+            }
+            return 'lose';
+        }
+
+        function animateDuel(playerChoice, computerChoice, result) {
+            // Animate hands
+            elements.playerHand.style.animation = 'duel 0.5s forwards';
+            elements.computerHand.style.animation = 'reverse-duel 0.5s forwards';
+            
+            // Show VS text
+            setTimeout(() => {
+                elements.vsText.style.animation = 'vsPulse 0.3s forwards';
+                
+                // Clash animation
+                setTimeout(() => {
+                    elements.playerHand.style.animation = 'clash 0.3s';
+                    elements.computerHand.style.animation = 'clash 0.3s';
+                    
+                    // Show results
+                    setTimeout(() => {
+                        showResults(playerChoice, computerChoice, result);
+                    }, 300);
+                }, 300);
+            }, 500);
+        }
+
+        function showResults(playerChoice, computerChoice, result) {
+            // Update scores
+            if (result === 'win') gameState.playerScore++;
+            if (result === 'lose') gameState.computerScore++;
+            updateScores();
+            
+            // Save to history
+            gameState.saveRound(playerChoice, computerChoice, result);
+            
+            // Display result
+            elements.resultText.classList.add('shake');
+            setTimeout(() => elements.resultText.classList.remove('shake'), 500);
+            
+            switch (result) {
+                case 'win':
+                    elements.resultText.textContent = 'You Win!';
+                    elements.resultText.style.color = 'var(--success)';
+                    elements.playerHand.style.color = 'var(--success)';
+                    elements.computerHand.style.color = 'var(--danger)';
+                    break;
+                case 'lose':
+                    elements.resultText.textContent = 'You Lose!';
+                    elements.resultText.style.color = 'var(--danger)';
+                    elements.playerHand.style.color = 'var(--danger)';
+                    elements.computerHand.style.color = 'var(--success)';
+                    break;
+                case 'draw':
+                    elements.resultText.textContent = "It's a Draw!";
+                    elements.resultText.style.color = 'var(--warning)';
+                    elements.playerHand.style.color = 'var(--warning)';
+                    elements.computerHand.style.color = 'var(--warning)';
+                    break;
+            }
+            
+            // Show reset button
+            elements.resetBtn.style.display = 'block';
+        }
+
+        function updateScores() {
+            elements.playerScore.textContent = gameState.playerScore;
+            elements.computerScore.textContent = gameState.computerScore;
+        }
+
+        function resetGame() {
+            gameState.resetGame();
+            updateScores();
+            elements.resultText.textContent = 'Make your move!';
+            elements.resultText.style.color = '';
+            elements.playerHand.innerHTML = '<i class="fas fa-question"></i>';
+            elements.computerHand.innerHTML = '<i class="fas fa-question"></i>';
+            elements.playerHand.style.color = '';
+            elements.computerHand.style.color = '';
+            elements.resetBtn.style.display = 'none';
+            elements.vsText.style.opacity = '0';
+            elements.playerHand.style.animation = '';
+            elements.computerHand.style.animation = '';
+            elements.playerHand.style.transform = 'translateX(-50px) rotate(-30deg)';
+            elements.computerHand.style.transform = 'translateX(50px) rotate(30deg)';
+        }
+
+        function setHandIcon(handElement, choice) {
+            const icons = {
+                rock: '<i class="fas fa-hand-rock"></i>',
+                paper: '<i class="fas fa-hand-paper"></i>',
+                scissors: '<i class="fas fa-hand-scissors"></i>'
+            };
+            handElement.innerHTML = icons[choice] || '<i class="fas fa-question"></i>';
+        }
+    </script>
 </body>
 </html>
